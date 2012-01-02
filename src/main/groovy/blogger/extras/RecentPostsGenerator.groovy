@@ -1,6 +1,8 @@
 package blogger.extras
 
 import groovy.util.logging.Slf4j
+import groovy.xml.MarkupBuilder
+import java.text.NumberFormat
 import org.apache.solr.client.solrj.SolrQuery
 import org.apache.solr.client.solrj.SolrServer
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer
@@ -8,19 +10,41 @@ import org.apache.solr.client.solrj.response.QueryResponse
 import org.apache.solr.common.SolrInputDocument
 import org.apache.solr.common.util.NamedList
 import org.apache.solr.core.CoreContainer
-import groovy.xml.MarkupBuilder
 
 @Slf4j
 class RecentPostsGenerator {
     private static final String SYSTEM_PROP_SOLR_HOME = 'solr.solr.home'
 
+    /**
+     * Solr home directory with conf/ dir contaning solrconfig.xml and schema.xml.
+     */
     String solrHome
+
+    /**
+     * Output directory for generated files.
+     */
     String outputDir
 
+    /**
+     * Solr embedded server.
+     */
     private SolrServer solrServer
+
+    /**
+     * Store blog item identifiers during read of blog content,
+     * so we can use them again when writing the files.
+     */
     private List<String> blogIds = []
+
+    /**
+     * Store SolrInputDocument objects so we can add them in one go
+     * to Solr for better performance.
+     */
     private Collection<SolrInputDocument> documents = []
 
+    /**
+     * Initialize Solr embedded server.
+     */
     void initialize() {
         initSolrHome()
         CoreContainer.Initializer initializer = new CoreContainer.Initializer()
@@ -82,8 +106,12 @@ class RecentPostsGenerator {
                     log.debug blogItem.toString()
                     final String title = blogItem.title
                     final String link = blogItem.link
+                    final String score = blogItem.score
                     li {
-                        a href: link, title
+                        a href: link, {
+                            mkp.yield title
+                            em "(Matching score is ${getScorePercentage(score)})"
+                        }
                     }
                 }
             }
@@ -94,6 +122,11 @@ class RecentPostsGenerator {
         }
     }
 
+    private String getScorePercentage(score) {
+        final NumberFormat format = NumberFormat.getPercentInstance(Locale.US)
+        final Double scoreNumber = Double.valueOf(score)
+        format.format(scoreNumber)
+    }
 
     private findRelatedBlogItems(blogId) {
         log.debug "query for blogId = $blogId"

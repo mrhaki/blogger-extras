@@ -7,3 +7,5 @@ def generator = new RecentPostsGenerator(solrHome: solrHome, outputDir: outputDi
 generator.initialize()
 generator.fillIndex()
 generator.writeRelatedPosts()
+
+System.exit 0

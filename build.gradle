@@ -1,7 +1,10 @@
-apply plugin: 'groovy'
-apply plugin: 'idea'
+['groovy', 'idea', 'application'].each {
+    apply plugin: it
+}
 
-def final SOLR_VERSION = '3.5.0'
+SOLR_VERSION = '3.5.0'
+
+mainClassName = 'blogger.extras.RecentPostsApplication'
 
 repositories {
     mavenCentral()
@@ -18,7 +21,7 @@ dependencies {
 
 jar {
     from {
-        configurations.groovyCompile.collect {
+        configurations.compile.collect {
             it.isDirectory() ? it : zipTree(it)
         }
     }
