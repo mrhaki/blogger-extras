@@ -1,12 +1,25 @@
 apply plugin: 'groovy'
 apply plugin: 'idea'
 
+def final SOLR_VERSION = '3.5.0'
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    groovy group: 'org.codehaus.groovy', name: 'groovy', version: '1.8.5'
-    compile 'org.apache.solr:solr-solrj:3.5.0'
+    groovy 'org.codehaus.groovy:groovy-all:1.8.5'
+    compile "org.apache.solr:solr-solrj:$SOLR_VERSION",
+            "org.apache.solr:solr-core:$SOLR_VERSION",
+            'ch.qos.logback:logback-classic:1.0.0'
     testCompile 'org.spockframework:spock-core:0.5-groovy-1.8'
+}
+
+
+jar {
+    from {
+        configurations.groovyCompile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
 }

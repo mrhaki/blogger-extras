@@ -1,3 +1,7 @@
 .gradle
 build
 blogger-extras.i??
+related-posts/*.html
+out/
+solr/data
+deploy.sh
