@@ -1,7 +1,12 @@
 package blogger.extras
 
-def solrHome = '/Users/mrhaki/Projects/blogger-extras/solr'
-def outputDir = '/Users/mrhaki/Projects/blogger-extras/related-posts'
+def sysProps = System.properties
+def solrHome = sysProps['solrHome']
+def outputDir = sysProps['outputDir']
+
+if (!solrHome || !outputDir) {
+    throw new IllegalArgumentException("Please set solrHome and outputDir System properties")
+}
 
 def generator = new RecentPostsGenerator(solrHome: solrHome, outputDir: outputDir)
 generator.initialize()
