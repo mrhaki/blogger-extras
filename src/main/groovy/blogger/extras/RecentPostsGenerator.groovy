@@ -139,7 +139,7 @@ class RecentPostsGenerator {
                 li {
                     a href: link, {
                         mkp.yield title
-                        em "(Matching score is ${score}"
+                        em "(Matching score is ${score})"
                     }
                 }
             }
