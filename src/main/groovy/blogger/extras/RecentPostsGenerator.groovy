@@ -11,6 +11,18 @@ import org.apache.solr.common.SolrInputDocument
 import org.apache.solr.common.util.NamedList
 import org.apache.solr.core.CoreContainer
 
+/**
+ * <p>Generate HTML output for each blog post with the 5 most related other
+ * blog posts.</p>
+ *
+ * <p>First we initalize Solr, then feed Solr with the blog posts to be
+ * indexed and then we query Solr for the most related posts per blog post.
+ * The result of the query is used to generate a HTML file for each
+ * blog post.</p>
+ *
+ * <p>The generated HTML file is later used by Javascript to include on
+ * the Blogger website.</p>
+ */
 @Slf4j
 class RecentPostsGenerator {
     private static final String SYSTEM_PROP_SOLR_HOME = 'solr.solr.home'
@@ -57,13 +69,17 @@ class RecentPostsGenerator {
         System.setProperty SYSTEM_PROP_SOLR_HOME, solrHome
     }
 
+    /**
+     * Use the Blogger Atom feed to get all blog items and add each found blog post
+     * to Solr.
+     */
     void fillIndex() {
         assert solrServer
         final String baseUrl = 'http://www.blogger.com/feeds/6671019398434141469/posts/default'
         String nextLink = baseUrl
         while (nextLink) {
             final def feed = new XmlSlurper().parse(nextLink)
-            feed.entry.each updateIndex
+            feed.entry.each createSolrInputDocument
             nextLink = feed.link.find { it.@rel == 'next' }.@href
         }
 
@@ -71,7 +87,7 @@ class RecentPostsGenerator {
         solrServer.commit()
     }
 
-    private updateIndex = { blog ->
+    private createSolrInputDocument = { blog ->
         String blogId = blog.id
         int startOfId = blogId.indexOf('post-')
         blogId = blogId.substring(startOfId)
@@ -91,6 +107,10 @@ class RecentPostsGenerator {
         documents << doc
     }
 
+    /**
+     * Find the related posts for each blog item and save the result to
+     * an HTML file in the directory set by outputDir.
+     */
     void writeRelatedPosts() {
         assert solrServer
         blogIds.each findAndSaveRelatedPosts
@@ -99,27 +119,32 @@ class RecentPostsGenerator {
     private findAndSaveRelatedPosts = { blogId ->
         final def relatedBlogItems = findRelatedBlogItems(blogId)
         if (relatedBlogItems) {
-            final def htmlWriter = new StringWriter()
-            final def html = new MarkupBuilder(htmlWriter)
-            html.ul(id: "related-posts-list-${blogId}", class: 'related-posts') {
-                relatedBlogItems.each { blogItem ->
-                    log.debug blogItem.toString()
-                    final String title = blogItem.title
-                    final String link = blogItem.link
-                    final String score = blogItem.score
-                    li {
-                        a href: link, {
-                            mkp.yield title
-                            em "(Matching score is ${getScorePercentage(score)})"
-                        }
+            final File relatedPosts = new File(outputDir, blogId + '.html')
+            final String html = createHtmlRelatedPosts(relatedBlogItems)
+            relatedPosts.text = html
+            return
+        }
+    }
+
+    private String createHtmlRelatedPosts(relatedBlogItems) {
+        final def htmlWriter = new StringWriter()
+        final def html = new MarkupBuilder(htmlWriter)
+        html.ul(id: "related-posts-list-${blogId}", class: 'related-posts') {
+            relatedBlogItems.each { blogItem ->
+                log.debug blogItem.toString()
+                final String title = blogItem.title
+                final String link = blogItem.link
+                String score = blogItem.score
+                score = getScorePercentage(score)
+                li {
+                    a href: link, {
+                        mkp.yield title
+                        em "(Matching score is ${score}"
                     }
                 }
             }
-
-            final File relatedPosts = new File(outputDir, blogId + '.html')
-            relatedPosts.text = htmlWriter.toString()
-            return
         }
+        htmlWriter.toString()
     }
 
     private String getScorePercentage(score) {
