@@ -11,6 +11,8 @@ var blogger_extras = function() {
                     if (data.results[0]) {
                         var posts = data.results[0];
                         holder.html("<h2>Related Posts</h2>" + posts);
+                    } else {
+                        holder.html('');
                     }
                 });
             } else {
