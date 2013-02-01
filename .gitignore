@@ -2,6 +2,7 @@
 build
 blogger-extras.i??
 related-posts/*.html
+related-posts/*.jsonp
 out/
 solr/data
 deploy.sh

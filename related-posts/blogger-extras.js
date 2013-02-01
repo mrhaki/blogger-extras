@@ -5,14 +5,18 @@ var blogger_extras = function() {
             var holder = $(this);
             var postId = holder.attr("rel");
             if (postId) {
-                var url = "http://www.mrhaki.com/related-posts/post-" + postId + ".html";
-                var query = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%20%3D%20'" + encodeURIComponent(url) + "'&format=xml&callback=?";
-                $.getJSON(query, function(data) {
-                    if (data.results[0]) {
-                        var posts = data.results[0];
-                        holder.html("<h2>Related Posts</h2>" + posts);
-                    } else {
-                        holder.html('');
+                var url = "http://www.mrhaki.com/related-posts/post-" + postId + ".jsonp";
+                $.ajax({
+                    url: url,
+                    dataType: "jsonp",
+                    jsonp: false, jsonpCallback: "showRelatedPosts",
+                    success: function(data) {
+                        $("<h2/>").text("Related posts").insertBefore(holder);
+                        $.each(data, function(i, item) {
+                            var li = $("<li/>");
+                            $("<a/>").attr("href", item.url).text(item.title + " (Matching score " + item.score + ")").appendTo(li);
+                            li.appendTo(holder);
+                        });
                     }
                 });
             } else {

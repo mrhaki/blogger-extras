@@ -2,7 +2,7 @@
     apply plugin: it
 }
 
-SOLR_VERSION = '3.5.0'
+ext.SOLR_VERSION = '3.5.0'
 
 mainClassName = 'blogger.extras.RecentPostsApplication'
 
@@ -11,11 +11,11 @@ repositories {
 }
 
 dependencies {
-    groovy 'org.codehaus.groovy:groovy-all:1.8.5'
+    groovy 'org.codehaus.groovy:groovy-all:2.0.5'
     compile "org.apache.solr:solr-solrj:$SOLR_VERSION",
             "org.apache.solr:solr-core:$SOLR_VERSION",
             'ch.qos.logback:logback-classic:1.0.0'
-    testCompile 'org.spockframework:spock-core:0.5-groovy-1.8'
+    testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
 }
 
 
@@ -29,5 +29,11 @@ jar {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.0-milestone-6'
+    gradleVersion = '1.4'
+}
+
+
+run {
+    systemProperty 'solrHome', "${projectDir}/solr"
+    systemProperty 'outputDir', "${projectDir}/related-posts"
 }
