@@ -130,6 +130,9 @@ class RecentPostsGenerator {
             final File relatedPostsJsonp = new File(outputDir, blogId + '.jsonp')
             final String jsonp = createJsonpRelatedPosts(blogId, relatedBlogItems)
             relatedPostsJsonp.text = jsonp
+
+            log.debug "Saved related items for blog $blogId"
+
             return
         }
     }
@@ -162,7 +165,7 @@ class RecentPostsGenerator {
         final def html = new MarkupBuilder(htmlWriter)
         html.ul(id: "related-posts-list-${blogId}", class: 'related-posts') {
             relatedBlogItems.each { blogItem ->
-                log.debug blogItem.toString()
+                log.trace blogItem.toString()
                 final String title = blogItem.title
                 final String link = blogItem.link
                 String score = blogItem.score
@@ -185,7 +188,7 @@ class RecentPostsGenerator {
     }
 
     private findRelatedBlogItems(blogId) {
-        log.debug "query for blogId = $blogId"
+        log.trace "query for blogId = $blogId"
         final SolrQuery query = buildQuery(blogId)
         final QueryResponse result = solrServer.query(query)
         final NamedList<Object> response = result.response
