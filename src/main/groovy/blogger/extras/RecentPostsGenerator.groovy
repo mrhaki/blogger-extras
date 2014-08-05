@@ -79,7 +79,7 @@ class RecentPostsGenerator {
      */
     void fillIndex() {
         assert solrServer
-        final String baseUrl = 'http://www.blogger.com/feeds/6671019398434141469/posts/default'
+        final String baseUrl = 'https://www.blogger.com/feeds/6671019398434141469/posts/default'
         String nextLink = baseUrl
         while (nextLink) {
             final def feed = new XmlSlurper().parse(nextLink)
