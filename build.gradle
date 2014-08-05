@@ -11,10 +11,10 @@ repositories {
 }
 
 dependencies {
-    groovy 'org.codehaus.groovy:groovy-all:2.0.5'
     compile "org.apache.solr:solr-solrj:$SOLR_VERSION",
             "org.apache.solr:solr-core:$SOLR_VERSION",
-            'ch.qos.logback:logback-classic:1.0.0'
+            'ch.qos.logback:logback-classic:1.0.0',
+            'org.codehaus.groovy:groovy-all:2.0.5'
     testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
 }
 
