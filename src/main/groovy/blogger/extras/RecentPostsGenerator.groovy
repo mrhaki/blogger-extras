@@ -139,16 +139,16 @@ class RecentPostsGenerator {
     private findAndSaveLabelPosts = { label ->
         final def labelBlogItems = findSameLabelBlogItems(label)
         if (labelBlogItems) {
-            final String filePrefix = 'labels-'
-            final File labelPosts = new File(outputDir, "${filePrefix}${label}.html")
+            final String filePrefix = "labels-${URLDecoder.decode(label, 'UTF-8')}"
+            final File labelPosts = new File(outputDir, "${filePrefix}.html")
             final String html = createHtmlLabelPosts(label, labelBlogItems)
             labelPosts.text = html
 
-            final File relatedPostsJsonp = new File(outputDir, "${filePrefix}${label}.jsonp")
+            final File relatedPostsJsonp = new File(outputDir, "${filePrefix}.jsonp")
             final String jsonp = createJsonpLabelPosts(label, labelBlogItems)
             relatedPostsJsonp.text = jsonp
 
-            log.debug "Saved same posts for $label"
+            log.debug "Saved same posts for $label in ${filePrefix}"
 
             return
         }

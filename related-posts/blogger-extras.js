@@ -56,7 +56,7 @@ var blogger_extras = function() {
                     jsonp: false, jsonpCallback: "showLabelPosts",
                     success: function(data) {
                         $("<h2/>").text("More posts " + blogitemLabel).insertBefore(holder);
-                        $.each(data.items, function(i, item) {
+                        $.each(data, function(i, item) {
                             var li = $("<li/>");
                             $("<a/>").attr("href", item.url).text(item.title).appendTo(li);
                             li.appendTo(holder);
