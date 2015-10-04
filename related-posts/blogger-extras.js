@@ -26,8 +26,8 @@ var blogger_extras = function() {
     };
 
     var labelSeries = function() {
-        var labelSeries = $('.post-label-series');
-        $.each(relatedPostsDivs, function(index, value) {
+        var labelSeriesDivs = $('.post-label-series');
+        $.each(labelSeriesDivs, function(index, value) {
             var holder = $(this);
             var blogitemTitle = holder.attr("rel");
             if (blogitemTitle) {
@@ -55,7 +55,7 @@ var blogger_extras = function() {
                     dataType: "jsonp",
                     jsonp: false, jsonpCallback: "showLabelPosts",
                     success: function(data) {
-                        $("<h2/>").text("More posts " + labelValue).insertBefore(holder);
+                        $("<h2/>").text("More posts " + blogitemLabel).insertBefore(holder);
                         $.each(data.items, function(i, item) {
                             var li = $("<li/>");
                             $("<a/>").attr("href", item.url).text(item.title).appendTo(li);
