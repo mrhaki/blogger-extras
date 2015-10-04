@@ -1,6 +1,7 @@
 package blogger.extras
 
 import groovy.json.JsonBuilder
+import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import groovy.xml.MarkupBuilder
 import org.apache.solr.client.solrj.SolrQuery
@@ -56,6 +57,13 @@ class RecentPostsGenerator {
      */
     private Collection<SolrInputDocument> documents = []
 
+    private List<String> labels =
+            ['Groovy:Goodness', 'Grails:Goodness',
+             'Gradle:Goodness', 'Groovy:Grassroots',
+             'Spocklight', 'Awesome:Asciidoctor',
+             'Ratpacked']
+                    .collect { URLEncoder.encode(it, 'UTF-8') }
+
     private static final String JSONP_CALLBACK = 'showRelatedPosts'
 
     /**
@@ -99,14 +107,16 @@ class RecentPostsGenerator {
         blogIds << blogId
 
         final String blogLink = blog.link.find { it.@type == 'text/html' && it.@rel == 'alternate' }.@href
-        final String blogContent = blog.content
-        final String blogTitle = blog.title
+        final String blogContent = blog.content.text()
+        final String blogTitle = blog.title.text()
+        final def labels = blog.category.'@term'?.collect { URLEncoder.encode(it.text(), 'UTF-8') }
 
         final SolrInputDocument doc = new SolrInputDocument()
         doc.addField 'id', blogId
         doc.addField 'title', blogTitle
         doc.addField 'content', blogContent
         doc.addField 'link', blogLink
+        doc.addField 'label', labels
 
         documents << doc
     }
@@ -118,6 +128,59 @@ class RecentPostsGenerator {
     void writeRelatedPosts() {
         assert solrServer
         blogIds.each findAndSaveRelatedPosts
+    }
+
+    void writeLabelPosts() {
+        labels.each { label ->
+            findAndSaveLabelPosts(label)
+        }
+    }
+
+    private findAndSaveLabelPosts = { label ->
+        final def labelBlogItems = findSameLabelBlogItems(label)
+        if (labelBlogItems) {
+            final String filePrefix = 'labels-'
+            final File labelPosts = new File(outputDir, "${filePrefix}${label}.html")
+            final String html = createHtmlLabelPosts(label, labelBlogItems)
+            labelPosts.text = html
+
+            final File relatedPostsJsonp = new File(outputDir, "${filePrefix}${label}.jsonp")
+            final String jsonp = createJsonpLabelPosts(label, labelBlogItems)
+            relatedPostsJsonp.text = jsonp
+
+            log.debug "Saved same posts for $label"
+
+            return
+        }
+    }
+
+    private def findSameLabelBlogItems(label) {
+        log.trace "query for label = $label"
+        final SolrQuery query = buildLabelQuery(label)
+        final QueryResponse result = solrServer.query(query)
+        final NamedList<Object> response = result.response
+
+        final def blogs = response.get('response')
+        blogs
+    }
+
+    private String createHtmlLabelPosts(label, labelBlogItems) {
+        final def htmlWriter = new StringWriter()
+        final def html = new MarkupBuilder(htmlWriter)
+        html.ul(id: "label-posts-list-${label}", class: 'label-posts') {
+            labelBlogItems.each { blogItem ->
+                log.trace blogItem.toString()
+                final String title = blogItem.title
+                final String link = blogItem.link
+                li {
+                    a href: link, {
+                        mkp.yield title
+                    }
+                }
+            }
+        }
+        htmlWriter.toString()
+
     }
 
     private findAndSaveRelatedPosts = { blogId ->
@@ -134,6 +197,24 @@ class RecentPostsGenerator {
             log.debug "Saved related items for blog $blogId"
 
             return
+        }
+    }
+
+    private String createJsonpLabelPosts(String label, blogItems) {
+        def labelPost = blogItems.collect { blogItem ->
+            [url: blogItem.link, title: blogItem.title]
+        }
+
+        def json = JsonOutput.toJson(labelPost)
+
+        jsonpWithCallback json, 'showLabelPosts'
+    }
+
+    private String jsonpWithCallback(final String json, final String callbackName) {
+        if (callbackName) {
+            "${callbackName}($json);"
+        } else {
+            "${JSONP_CALLBACK}($json);"
         }
     }
 
@@ -203,6 +284,12 @@ class RecentPostsGenerator {
         queryParameters.each { key, value ->
               solrQuery.setParam key, value
         }
+        solrQuery
+    }
+
+    private buildLabelQuery(String label) {
+        final SolrQuery solrQuery = new SolrQuery(rows: documents.size())
+        solrQuery.query = "label:${label}" as String
         solrQuery
     }
 
