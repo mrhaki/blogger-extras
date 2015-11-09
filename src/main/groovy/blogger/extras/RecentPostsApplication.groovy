@@ -16,7 +16,7 @@ if (!solrHome || !outputDir) {
 def generator = new RecentPostsGenerator(solrHome: solrHome, outputDir: outputDir)
 generator.initialize()
 generator.fillIndex()
-//generator.writeRelatedPosts()
+generator.writeRelatedPosts()
 generator.writeLabelPosts()
 
 // Stop
