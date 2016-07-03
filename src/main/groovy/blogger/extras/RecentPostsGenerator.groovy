@@ -61,7 +61,7 @@ class RecentPostsGenerator {
             ['Groovy:Goodness', 'Grails:Goodness',
              'Gradle:Goodness', 'Groovy:Grassroots',
              'Spocklight', 'Awesome:Asciidoctor',
-             'Ratpacked']
+             'Ratpacked', 'Spring:Sweets']
                     .collect { URLEncoder.encode(it, 'UTF-8') }
 
     private static final String JSONP_CALLBACK = 'showRelatedPosts'

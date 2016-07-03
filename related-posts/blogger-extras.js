@@ -5,7 +5,7 @@ var blogger_extras = function() {
             var holder = $(this);
             var postId = holder.attr("rel");
             if (postId) {
-                var url = "http://www.mrhaki.com/related-posts/post-" + postId + ".jsonp";
+                var url = "//www.mrhaki.com/related-posts/post-" + postId + ".jsonp";
                 $.ajax({
                     url: url,
                     dataType: "jsonp",
@@ -47,9 +47,11 @@ var blogger_extras = function() {
                     blogitemLabel = "Ratpacked";
                 } else if (/^Spocklight:.*$/.test(blogitemTitle)) {
                     blogitemLabel = "Spocklight";
+                } else if (/^Spring Sweets:.*$/.test(blogitemTitle)) {
+                    blogitemLabel = "Spring:Sweets";
                 }
 
-                var url = "http://www.mrhaki.com/related-posts/labels-" + escape(blogitemLabel) + ".jsonp";
+                var url = "//www.mrhaki.com/related-posts/labels-" + escape(blogitemLabel) + ".jsonp";
                 $.ajax({
                     url: url,
                     dataType: "jsonp",
