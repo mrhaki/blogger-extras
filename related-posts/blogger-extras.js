@@ -49,6 +49,10 @@ var blogger_extras = function() {
                     blogitemLabel = "Spocklight";
                 } else if (/^Spring Sweets:.*$/.test(blogitemTitle)) {
                     blogitemLabel = "Spring:Sweets";
+                } else if (/^PlantUML Pleasantness:.*$/.test(blogitemTitle)) {
+                    blogitemLabel = "PlantUML:Pleasantness";
+                } else if (/^Micronaut Mastery:.*$/.test(blogitemTitle)) {
+                    blogitemLabel = "Micronaut:Mastery";
                 }
 
                 var url = "//www.mrhaki.com/related-posts/labels-" + escape(blogitemLabel) + ".jsonp";

@@ -61,7 +61,7 @@ class RecentPostsGenerator {
             ['Groovy:Goodness', 'Grails:Goodness',
              'Gradle:Goodness', 'Groovy:Grassroots',
              'Spocklight', 'Awesome:Asciidoctor',
-             'Ratpacked', 'Spring:Sweets']
+             'Ratpacked', 'Spring:Sweets', 'PlantUML:Pleasantness', 'Micronaut:Mastery']
                     .collect { URLEncoder.encode(it, 'UTF-8') }
 
     private static final String JSONP_CALLBACK = 'showRelatedPosts'
@@ -90,6 +90,7 @@ class RecentPostsGenerator {
         final String baseUrl = 'https://www.blogger.com/feeds/6671019398434141469/posts/default'
         String nextLink = baseUrl
         while (nextLink) {
+            log.debug 'Parsing URL {}', nextLink
             final def feed = new XmlSlurper().parse(nextLink)
             feed.entry.each createSolrInputDocument
             nextLink = feed.link.find { it.@rel == 'next' }.@href
