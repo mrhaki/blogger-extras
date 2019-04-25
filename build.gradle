@@ -28,11 +28,6 @@ jar {
     }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.4'
-}
-
-
 run {
     systemProperty 'solrHome', "${projectDir}/solr"
     systemProperty 'outputDir', "${projectDir}/related-posts"
