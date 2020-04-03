@@ -58,10 +58,17 @@ class RecentPostsGenerator {
     private Collection<SolrInputDocument> documents = []
 
     private List<String> labels =
-            ['Groovy:Goodness', 'Grails:Goodness',
-             'Gradle:Goodness', 'Groovy:Grassroots',
-             'Spocklight', 'Awesome:Asciidoctor',
-             'Ratpacked', 'Spring:Sweets', 'PlantUML:Pleasantness', 'Micronaut:Mastery']
+            ['Groovy:Goodness', 
+             'Grails:Goodness',
+             'Gradle:Goodness', 
+             'Groovy:Grassroots',
+             'Spocklight', 
+             'Awesome:Asciidoctor',
+             'Ratpacked', 
+             'Spring:Sweets', 
+             'PlantUML:Pleasantness', 
+             'Micronaut:Mastery',
+             'Clojure:Goodness']
                     .collect { URLEncoder.encode(it, 'UTF-8') }
 
     private static final String JSONP_CALLBACK = 'showRelatedPosts'
