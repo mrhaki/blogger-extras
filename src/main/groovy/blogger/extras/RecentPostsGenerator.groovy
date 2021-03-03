@@ -68,7 +68,8 @@ class RecentPostsGenerator {
              'Spring:Sweets', 
              'PlantUML:Pleasantness', 
              'Micronaut:Mastery',
-             'Clojure:Goodness']
+             'Clojure:Goodness',
+             'Java:Joy']
                     .collect { URLEncoder.encode(it, 'UTF-8') }
 
     private static final String JSONP_CALLBACK = 'showRelatedPosts'
