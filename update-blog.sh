@@ -1,8 +1,8 @@
 #!/bin/zsh
 source ~/.zshrc
-sdk use java 8.0.242.hs-adpt
 
 cd /Users/mrhaki/Projects/blogger-extras
+sdk env
 
 ./gradlew run
 ./deploy.sh
