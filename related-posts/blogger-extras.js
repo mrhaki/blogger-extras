@@ -55,6 +55,8 @@ var blogger_extras = function() {
                     blogitemLabel = "Micronaut:Mastery";
                 } else if (/^Clojure Goodness:.*$/.test(blogitemTitle)) {
                     blogitemLabel = "Clojure:Goodness";
+                } else if (/^Java Joy:.*$/.test(blogitemTitle)) {
+                    blogitemLabel = "Java:Joy";
                 }
 
                 var url = "//www.mrhaki.com/related-posts/labels-" + escape(blogitemLabel) + ".jsonp";
